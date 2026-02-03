@@ -9,10 +9,11 @@ print("By ilikespace and Roshan The Modder\n")
 print("")
 print("End result should be in this folder\n")
 
+# GUI related shit
 root = tk.Tk()
 root.geometry("1200x800")
 root.title("SFS Planet Maker")
-tk.Label(root, text="SFS Planet Maker by Roshan and ilikespace", font=("Segoe UI", 20, "bold"), background="black", foreground="white").grid(sticky="ew")
+tk.Label(root, text="SFS Planet Maker by Roshan and ilikespace", font=("Segoe UI", 44, "bold"), background="black", foreground="white").grid(sticky="ew")
 
 style = ttk.Style(root)
 style.theme_use("clam")
@@ -40,11 +41,33 @@ atmophysictab = tk.Frame(tabs, background="black")
 atmovisualtab = tk.Frame(tabs, background="black")
 cloudstab = tk.Frame(tabs, background="black")
 
+# Base Data GUI
 radiusvar = tk.DoubleVar(value=314970.0)
-radiuslabel = tk.Label(basedatatab, text="Radius:", bg="black", fg="white", font=("Segoe UI", 10, "bold"))
+radiuslabel = tk.Label(basedatatab, text="Radius:", bg="black", fg="white", font=("Segoe UI", 15, "bold"))
 radiuslabel.grid(row=0, column=0)
-radiusentry = tk.Entry(basedatatab, textvariable=radiusvar, bg="black", fg="white", font=("Segoe UI", 10, "bold"))
+radiusentry = tk.Entry(basedatatab, textvariable=radiusvar, bg="black", fg="white", font=("Segoe UI", 15, "bold"))
 radiusentry.grid(row=0, column=1)
+gravityvar = tk.DoubleVar(value=9.8)
+gravitylabel = tk.Label(basedatatab, text="Gravity:", bg="black", fg="white", font=("Segoe UI", 15, "bold"))
+gravitylabel.grid(row=1, column=0)
+gravityentry = tk.Entry(basedatatab, textvariable=gravityvar, bg="black", fg="white", font=("Segoe UI", 15, "bold"))
+gravityentry.grid(row=1, column=1)
+timewarpheightvar = tk.DoubleVar(value=25000.0)
+timewarpheightlabel = tk.Label(basedatatab, text="Timewarp Height:", bg="black", fg="white", font=("Segoe UI", 15, "bold"))
+timewarpheightlabel.grid(row=2, column=0)
+timewarpheightentry = tk.Entry(basedatatab, textvariable=timewarpheightvar, bg="black", fg="white", font=("Segoe UI", 15, "bold"))
+timewarpheightentry.grid(row=2, column=1)
+velocityarrowsheightvar = tk.DoubleVar(value=5000.0)
+velocityarrowsheightlabel = tk.Label(basedatatab, text="Velocity Arrows Height:", bg="black", fg="white", font=("Segoe UI", 15, "bold"))
+velocityarrowsheightlabel.grid(row=3, column=0)
+velocityarrowsheightentry = tk.Entry(basedatatab, textvariable=velocityarrowsheightvar, bg="black", fg="white", font=("Segoe UI", 15, "bold"))
+velocityarrowsheightentry.grid(row=3, column=1)
+mapcolorvar = tk.StringVar(value="0.45, 0.68, 1.0, 1.0")
+mapcolorlabel = tk.Label(basedatatab, text="Map Color:", bg="black", fg="white", font=("Segoe UI", 15, "bold"))
+mapcolorlabel.grid(row=4, column=0)
+mapcolorentry = tk.Entry(basedatatab, textvariable=mapcolorvar, bg="black", fg="white", font=("Segoe UI", 15, "bold"))
+mapcolorentry.grid(row=4, column=1)
+
 
 tabs.add(basedatatab, text="Base Data")
 tabs.add(atmophysictab, text="Atmosphere Physics Data")
@@ -56,27 +79,44 @@ def get_user_input(prompt, default_value):
     return float(user_input) if user_input else default_value
 
 
-def get_color_input(prompt, default_value):
-    user_input = input(f"{prompt} (default r,g,b,a): ")
-    if user_input:
-        r, g, b, a = map(float, user_input.split(","))
-        return {"r": r, "g": g, "b": b, "a": a}
-    return {
-        "r": default_value[0],
-        "g": default_value[1],
-        "b": default_value[2],
-        "a": default_value[3],
-    }
+def get_color_input(prompt, default_value, gui_var=None, use_console=False):
+    def _default():
+        return {"r": float(default_value[0]), "g": float(default_value[1]),
+                "b": float(default_value[2]), "a": float(default_value[3])}
 
+    if use_console:
+        s = input(f"{prompt} (r,g,b,a) [{default_value}]: ").strip()
+        if s:
+            try:
+                parts = [p.strip() for p in s.replace(";", ",").split(",")]
+                r, g, b, a = map(float, parts)
+                return {"r": r, "g": g, "b": b, "a": a}
+            except Exception:
+                return _default()
+
+    if gui_var is not None:
+        try:
+            val = gui_var.get() if hasattr(gui_var, "get") else gui_var
+            if isinstance(val, dict):
+                return {k: float(val.get(k, _default()[k])) for k in ("r", "g", "b", "a")}
+            if isinstance(val, (list, tuple)):
+                r, g, b, a = map(float, val); return {"r": r, "g": g, "b": b, "a": a}
+            if isinstance(val, str):
+                parts = [p.strip() for p in val.replace(";", ",").split(",")]
+                r, g, b, a = map(float, parts); return {"r": r, "g": g, "b": b, "a": a}
+        except Exception:
+            return _default()
+
+    return _default()
 
 def generate_config():
     # Base Data
     print("Base Data configs\n")
-    radius = get_user_input("Enter radius", 314970.0)
-    gravity = get_user_input("Enter gravity", 9.8)
-    timewarpHeight = get_user_input("Enter timewarp height", 25000)
-    velocityArrowsHeight = get_user_input("Enter velocity arrows height", 5000)
-    map_color = get_color_input("Enter map color (RGBA (Red Green Blue Alpha))", (0.45, 0.68, 1.0, 1.0))
+    radius = radiusvar.get()
+    gravity = gravityvar.get()
+    timewarpHeight = timewarpheightvar.get()
+    velocityArrowsHeight = velocityarrowsheightvar.get()
+    map_color = get_color_input("Enter map color (RGBA)", (0.45, 0.68, 1.0, 1.0), gui_var=mapcolorvar)
     print("")
     
     # Actual Atmosphere data
@@ -148,7 +188,7 @@ def generate_config():
     OceanDeepColor = get_color_input("Input Deep Ocean Color", (0.1, 0.15, 0.55, 1.0))
     waterGradientWidthMultipler = get_user_input("Input Water Gradient Multiplier", 0.5)
     sandGradientWidthMultipler = get_user_input("Input Sand Gradient Width Multipler", 2.0)
-    floorGradientWidthMultipler = get_user_input("Input Floor Gradient Width Multiplier", 10.0)
+    floorGradientWidthMultipler = get_user_input("Input Floor Gradient Width Multiplier", 20.0)
     opacitySurface = get_user_input("Input Opacity Surface", 0.8)
     opactiyFar = get_user_input("Input Opacity Far", 1.0)
     opacityFullDarkness = get_user_input("Input Opacity Full Darkness", 0.95)
