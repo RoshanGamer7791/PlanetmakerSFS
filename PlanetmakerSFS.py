@@ -18,7 +18,7 @@ def get_user_input(prompt, default_value):
 
 
 def get_color_input(prompt, default_value):
-    user_input = input(f"{prompt} (default r,g,b,a): ")
+    user_input = input(f"{prompt} (default {default_value}: ")
     if user_input:
         r, g, b, a = map(float, user_input.split(","))
         return {"r": r, "g": g, "b": b, "a": a}
@@ -26,11 +26,11 @@ def get_color_input(prompt, default_value):
         "r": default_value[0],
         "g": default_value[1],
         "b": default_value[2],
-        "a": default_value[3],
+        "a": default_value[3]
     }
     
 def get_xy_input(prompt, default_value):
-    user_input = input(f"{prompt} (default r,g,b,a): ")
+    user_input = input(f"{prompt} (default {default_value}): ")
     if user_input:
         x, y = map(float, user_input.split(","))
         return {"x": x, "y": y}
@@ -40,22 +40,34 @@ def get_xy_input(prompt, default_value):
     }
     
 def get_mustcannotglobal_input(prompt, default_value):
-    user_input = input(f"{prompt} (default must, cannot, global): ")
+    user_input = input(f"{prompt} (default {default_value}: ")
     if user_input:
         must, cannot, global1 = map(float, user_input.split(","))
         return {"must": must, "cannot": cannot , "global": global1}
     return {
         "must": default_value[0],
         "cannot": default_value[1],
-        "global": default_value[2],
+        "global": default_value[2]
     }
 
+def get_difficultyscale_input(prompt, default_value):
+    user_input = input(f"{prompt} (default {default_value}): ")
+    if user_input:
+        n, h, r = map(float, user_input.split(","))
+        return {"Normal": n, "Hard": h, "Realistic": r}
+    return {
+        "Normal": default_value[0],
+        "Hard": default_value[1],
+        "Realistic": default_value[2]
+    }
 
 def generate_config():
     # Base Data
     print("Base Data configs\n")
     radius = get_user_input("Enter radius", 314970.0)
+    radiusdifficultyscale = get_difficultyscale_input("Input Radius Difficulty Scale", (1.0, 2.0, 20.0))
     gravity = get_user_input("Enter gravity", 9.8)
+    gravitydifficultyscale = get_difficultyscale_input("Input Gravity Difficulty Scale", (1.0, 1.0, 1.0))
     timewarpHeight = get_user_input("Enter timewarp height", 25000)
     velocityArrowsHeight = get_user_input("Enter velocity arrows height", 5000)
     map_color = get_color_input("Enter map color (RGBA (Red Green Blue Alpha))", (0.45, 0.68, 1.0, 1.0))
@@ -68,6 +80,7 @@ def generate_config():
     curve = get_user_input("Enter Curve", 10.0)
     parachuteMultiplier = get_user_input("Enter Parachute Multiplier", 1.0)
     upperAtmosphere = get_user_input("Enter Upper Atmosphere multiplier", 0.333)
+    heightdifficultyscale = get_difficultyscale_input("Input Atmosphere Height Difficulty Scale", (1.0, 1.666666666666667, 3.333333333333333))
     shockwaveIntensity = get_user_input("Enter Shockwave Intensity", 1.0)
     minHeatingVelocityMultiplier = get_user_input("Enter Minimum Heating Velocity Multiplier", 1.0)
     print("")
@@ -149,18 +162,20 @@ def generate_config():
     print("Orbital Data configs\n")
     parent = input("Enter orbit parent (default Sun): ") or "Sun"
     semi_major_axis = get_user_input("Enter semi-major axis", 7480000000.0)
+    smadifficultyscale = get_difficultyscale_input("Input Semi-major Axis scale", (1.0, 2.0, 20.0))
     eccentricity = get_user_input("Input Eccentricity", 0.0)
     argumentofperiapsis = get_user_input("Input Argument of Periapsis", 0.0)
     multipliersoi = get_user_input("Input Multiplier SOI", 2.5)
+    soidifficultyscale = get_difficultyscale_input("Input SOI difficulty scale", (1.0, 2.0, 20.0))
     print("")
 
     config_data = {
         "version": "1.5",
         "BASE_DATA": {
             "radius": radius,
-            "radiusDifficultyScale": {},
+            "radiusDifficultyScale": radiusdifficultyscale,
             "gravity": gravity,
-            "gravityDifficultyScale": {},
+            "gravityDifficultyScale": gravitydifficultyscale ,
             "timewarpHeight": timewarpHeight,
             "velocityArrowsHeight": velocityArrowsHeight,
             "mapColor": map_color,
@@ -174,7 +189,7 @@ def generate_config():
             "curveScale": {},
             "parachuteMultiplier": parachuteMultiplier,
             "upperAtmosphere": upperAtmosphere,
-            "heightDifficultyScale": {},
+            "heightDifficultyScale": heightdifficultyscale,
             "shockwaveIntensity": shockwaveIntensity,
             "minHeatingVelocityMultiplier": minHeatingVelocityMultiplier,
         },
@@ -279,12 +294,12 @@ def generate_config():
         "ORBIT_DATA": {
             "parent": parent,
             "semiMajorAxis": semi_major_axis,
-            "smaDifficultyScale": {},
+            "smaDifficultyScale": smadifficultyscale,
             "eccentricity": eccentricity,
             "argumentOfPeriapsis": argumentofperiapsis,
             "direction": 1,
             "multiplierSOI": multipliersoi,
-            "soiDifficultyScale": {},
+            "soiDifficultyScale": soidifficultyscale,
         },
         "ACHIEVEMENT_DATA": {
             "Landed": False,
