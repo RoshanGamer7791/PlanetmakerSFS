@@ -28,6 +28,27 @@ def get_color_input(prompt, default_value):
         "b": default_value[2],
         "a": default_value[3],
     }
+    
+def get_xy_input(prompt, default_value):
+    user_input = input(f"{prompt} (default r,g,b,a): ")
+    if user_input:
+        x, y = map(float, user_input.split(","))
+        return {"x": x, "y": y}
+    return {
+        "x": default_value[0],
+        "y": default_value[1]
+    }
+    
+def get_mustcannotglobal_input(prompt, default_value):
+    user_input = input(f"{prompt} (default must, cannot, global): ")
+    if user_input:
+        must, cannot, global1 = map(float, user_input.split(","))
+        return {"must": must, "cannot": cannot , "global": global1}
+    return {
+        "must": default_value[0],
+        "cannot": default_value[1],
+        "global": default_value[2],
+    }
 
 
 def generate_config():
@@ -107,9 +128,14 @@ def generate_config():
     OceanFloorColor = get_color_input("Input Ocean Floor Color", (0.25, 0.25, 0.25, 1.0))
     OceanShallowColor = get_color_input("Input Shallow Ocean Color", (0.1, 0.68, 1.0, 0.4))
     OceanDeepColor = get_color_input("Input Deep Ocean Color", (0.1, 0.15, 0.55, 1.0))
+    MaskGradient_Water = get_mustcannotglobal_input("Input Mask Gradient Water", (1000.0, 700.0, 2000.0))
     waterGradientWidthMultipler = get_user_input("Input Water Gradient Multiplier", 0.5)
+    MaskGradient_Terrain = get_mustcannotglobal_input("Input Mask Gradient Terrain", (25.0, 25.0, 50.0))
     sandGradientWidthMultipler = get_user_input("Input Sand Gradient Width Multipler", 2.0)
     floorGradientWidthMultipler = get_user_input("Input Floor Gradient Width Multiplier", 10.0)
+    shoreNoiseSize = get_xy_input("Input Shore Noise Size", (3000.0, 1000.0))
+    sandNoiseSize = get_xy_input("Input Sand Noise Size", (500.0, 100.0))
+    wavesSize = get_xy_input("Input Waves Size", (16.0, 0.3))
     opacitySurface = get_user_input("Input Opacity Surface", 0.8)
     opactiyFar = get_user_input("Input Opacity Far", 1.0)
     opacityFullDarkness = get_user_input("Input Opacity Full Darkness", 0.95)
@@ -234,14 +260,14 @@ def generate_config():
             "floor": OceanFloorColor,
             "shallow": OceanShallowColor,
             "deep": OceanDeepColor,
-            "maskGradient_Water": {"must": 1000.0, "cannot": 700.0, "global": 2000.0},
+            "maskGradient_Water": MaskGradient_Water,
             "waterGradientWidthMultiplier": waterGradientWidthMultipler,
-            "maskGradient_Terrain": {"must": 25.0, "cannot": 25.0, "global": 50.0},
+            "maskGradient_Terrain": MaskGradient_Terrain,
             "sandGradientWidthMultiplier": sandGradientWidthMultipler,
             "floorGradientWidthMultiplier": floorGradientWidthMultipler,
-            "shoreNoiseSize": {"x": 3000.0, "y": 1000.0},
-            "sandNoiseSize": {"x": 500.0, "y": 100.0},
-            "wavesSize": {"x": 16.0, "y": 0.3},
+            "shoreNoiseSize": shoreNoiseSize,
+            "sandNoiseSize": sandNoiseSize,
+            "wavesSize": wavesSize,
             "opacity_Surface": opacitySurface,
             "opacity_Far": opactiyFar,
             "opacity_FullDarkness": opacityFullDarkness,
